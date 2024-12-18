@@ -19,6 +19,11 @@ class Prodi(models.Model):
         return self.nama
 
 
+JENIS_KELAMIN_CHOICES = (
+    ('l','Laki-laki'),
+    ('p','perempuan'),
+)
+
 class Mahasiswa(models.Model):
     class Meta:
         verbose_name = 'mahasiswa'
@@ -30,7 +35,13 @@ class Mahasiswa(models.Model):
 
     nama = models.CharField(blank=False, null=True, max_length=50)
     nim = models.CharField(blank=False, null=True, max_length=15)
+    jenis_kelamin = models.CharField(max_length=1, choices=JENIS_KELAMIN_CHOICES, blank=True, null=True)
+    tgl_lahir = models.DateField(null=True, blank=True)
     prodi = models.ForeignKey(Prodi, blank=True, null=True, on_delete=models.SET_NULL)
+    # log -> keamanan
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+    # updated_by = models.ForeignKey('auth.User', null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.nama
@@ -45,14 +56,9 @@ class Dosen(models.Model):
             models.Index(fields=['nid']),
         ]
 
-    JENIS_KELAMIN_CHOICES = (
-        ('l','Laki-laki'),
-        ('p','perempuan'),
-    )
-
     nama = models.CharField(blank=False, null=True, max_length=50)
     nid = models.CharField(blank=False, null=True, max_length=15)
-    tgl_lahir = models.DateField(null=True)
+    tgl_lahir = models.DateField(null=True, blank=True)
     jenis_kelamin = models.CharField(max_length=1, choices=JENIS_KELAMIN_CHOICES, blank=True, null=True)
     prodi = models.ForeignKey(Prodi, blank=True, null=True, on_delete=models.SET_NULL)
 

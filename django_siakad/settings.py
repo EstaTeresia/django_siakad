@@ -9,11 +9,16 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import os
 
 from pathlib import Path
 from django.templatetags.static import static
 from django.urls import reverse_lazy
+from urllib.parse import urlparse
+from os import getenv
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,7 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_siakad',
-    'master'
+    'master',
+    'akademik'
 ]
 
 MIDDLEWARE = [
@@ -81,18 +87,23 @@ WSGI_APPLICATION = 'django_siakad.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# postgresql://user:localhost/db_names
+db_url = os.getenv("DATABASE_URL")
+
+postgres_url = urlparse(db_url)
+
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "django_siakad",
-        "USER": "anz",
-        "PASSWORD": "adminkeren",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': postgres_url.path.replace('/', ''),
+        'USER': postgres_url.username,
+        'PASSWORD': postgres_url.password,
+        'HOST': postgres_url.hostname,
+        'PORT': 5432,
     }
 }
 
@@ -150,6 +161,7 @@ UNFOLD = {
     #     "dark": lambda request: static("assets/logo-polisam.png"),  # dark mode
     # },
     # "SITE_SYMBOL": "school",  # symbol from icon set
+    "DASHBOARD_CALLBACK": "django_siakad.views.dashboard_callback",
     "SITE_FAVICONS": [
         {
             "rel": "icon",
@@ -165,7 +177,7 @@ UNFOLD = {
             {
                 "title": "Navigasi",
                 "separator": True,
-                "collapsible": True,
+                "collapsible": False,
                 "items": [
                      {
                         "title": "Dashboard",
@@ -174,6 +186,21 @@ UNFOLD = {
                         # "badge": "new",
                         "permission": lambda request: request.user.is_superuser,
                     },
+                    {
+                        "title": "Mata Kuliah",
+                        "icon": "menu_book",
+                        "link": reverse_lazy("admin:akademik_matakuliah_changelist")
+                    },
+                    {
+                        "title": "Jadwal",
+                        "icon": "event_note",
+                        "link": reverse_lazy("admin:akademik_jadwal_changelist")
+                    },
+                    {
+                        "title": "KRS",
+                        "icon": "calendar_add_on",
+                        "link": reverse_lazy("admin:akademik_krs_changelist")
+                    }
                 ]
             },
             {
@@ -188,8 +215,13 @@ UNFOLD = {
                     },
                     {
                         "title": "Ruang",
-                        "icon": "room",
+                        "icon": "meeting_room",
                         "link": reverse_lazy("admin:master_ruang_changelist"),
+                    },
+                    {
+                        "title": "Periode",
+                        "icon": "calendar_month",
+                        "link": reverse_lazy("admin:akademik_periode_changelist")
                     },
                     {
                         "title": "Dosen",
