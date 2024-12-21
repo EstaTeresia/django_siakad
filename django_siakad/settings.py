@@ -15,10 +15,7 @@ from pathlib import Path
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from urllib.parse import urlparse
-from os import getenv
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -50,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_siakad',
     'master',
-    'akademik'
+    'akademik',
 ]
 
 MIDDLEWARE = [
@@ -88,22 +85,15 @@ WSGI_APPLICATION = 'django_siakad.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # postgresql://user:localhost/db_names
-db_url = os.getenv("DATABASE_URL")
-
-postgres_url = urlparse(db_url)
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': postgres_url.path.replace('/', ''),
-        'USER': postgres_url.username,
-        'PASSWORD': postgres_url.password,
-        'HOST': postgres_url.hostname,
-        'PORT': 5432,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "Akademik",
+        "USER": "postgres",
+        "PASSWORD": "esta1234",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
@@ -185,8 +175,15 @@ UNFOLD = {
                         "link": reverse_lazy("admin:index"),
                         # "badge": "new",
                         "permission": lambda request: request.user.is_superuser,
-                    },
-                    {
+                    }
+                ]
+            },
+            {
+                "title": "Akademik",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                      {
                         "title": "Mata Kuliah",
                         "icon": "menu_book",
                         "link": reverse_lazy("admin:akademik_matakuliah_changelist")
@@ -200,7 +197,7 @@ UNFOLD = {
                         "title": "KRS",
                         "icon": "calendar_add_on",
                         "link": reverse_lazy("admin:akademik_krs_changelist")
-                    }
+                    }   
                 ]
             },
             {
